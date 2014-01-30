@@ -1,6 +1,5 @@
-Discourse.Group = Discourse.Model.extend({
+Discourse.AdminGroup = Discourse.Model.extend({
   loaded: false,
-
 
   ALIAS_LEVELS : {
     "nobody": 0,
@@ -34,8 +33,8 @@ Discourse.Group = Discourse.Model.extend({
   },
 
   usernames: function() {
-    var users = this.get('users');
-    var usernames = "";
+    var users = this.get('users'),
+        usernames = "";
     if(users) {
       usernames = _.map(users, function(user){
         return user.get('username');
@@ -71,8 +70,8 @@ Discourse.Group = Discourse.Model.extend({
   },
 
   create: function(){
-    var group = this;
-    group.set('disableSave', true);
+    var self = this;
+    self.set('disableSave', true);
 
     return Discourse.ajax("/admin/groups", {type: "POST", data: {
       group: {
@@ -81,10 +80,10 @@ Discourse.Group = Discourse.Model.extend({
         usernames: this.get('usernames')
       }
     }}).then(function(resp) {
-      group.set('disableSave', false);
-      group.set('id', resp.id);
+      self.set('disableSave', false);
+      self.set('id', resp.id);
     }, function (error) {
-      group.set('disableSave', false);
+      self.set('disableSave', false);
       if (error && error.responseText) {
         bootbox.alert($.parseJSON(error.responseText).errors);
       }
@@ -95,8 +94,8 @@ Discourse.Group = Discourse.Model.extend({
   },
 
   save: function(){
-    var group = this;
-    group.set('disableSave', true);
+    var self = this;
+    self.set('disableSave', true);
 
     return Discourse.ajax("/admin/groups/" + this.get('id'), {
       type: "PUT",
@@ -108,7 +107,7 @@ Discourse.Group = Discourse.Model.extend({
         }
       }
     }).then(function(){
-      group.set('disableSave', false);
+      self.set('disableSave', false);
     }, function(e){
       var message = $.parseJSON(e.responseText).errors;
       bootbox.alert(message);
@@ -117,13 +116,13 @@ Discourse.Group = Discourse.Model.extend({
 
 });
 
-Discourse.Group.reopenClass({
+Discourse.AdminGroup.reopenClass({
   findAll: function(){
     var list = Discourse.SelectableArray.create();
 
     Discourse.ajax("/admin/groups.json").then(function(groups){
       _.each(groups,function(group){
-        list.addObject(Discourse.Group.create(group));
+        list.addObject(Discourse.AdminGroup.create(group));
       });
     });
 

@@ -9,7 +9,7 @@
 Discourse.AdminGroupsRoute = Discourse.Route.extend({
 
   model: function() {
-    return Discourse.Group.findAll();
+    return Discourse.AdminGroup.findAll();
   }
 
 });
